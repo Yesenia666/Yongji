@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>永寂</title>
+    <style>
+        body { font-family: Arial; margin: 20px; background: #f5f5f5; }
+        #output { 
+            background: white; 
+            border: 1px solid #ccc; 
+            height: 300px; 
+            padding: 10px; 
+            overflow: auto;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            background: #4CAF50;
+            color: white;
+            font-size: 16px;
+        }
+        #stopBtn { background: #f44336; }
+        #resetBtn { background: #ff9800; }
+    </style>
+</head>
+<body>
+    <h2>永寂</h2>
+    <div id="output"></div>
+    <div>
+        <button id="runBtn">运行</button>
+        <button id="stopBtn">停止</button>
+        <button id="resetBtn">重置</button>
+    </div>
+
+    <script>
+        let n = 1;
+        let isRunning = false;
+        let intervalId = null;
+        const outputElement = document.getElementById('output');
+        
+        outputElement.innerHTML = "<p>你说 古格安 你要当他的古格安</p>";
+        
+        function runProgram() {
+            if (isRunning) return;
+            
+            isRunning = true;
+            document.getElementById('runBtn').disabled = true;
+            
+            intervalId = setInterval(() => {
+                let m = n;
+                outputElement.innerHTML += "<p>你要当他的眼睛</p>";
+                
+                let line = '';
+                for (let i = 0; i < m; i++) {
+                    line += '那我呢';
+                }
+                line += '?';
+                outputElement.innerHTML += `<p>${line}</p>`;
+                
+                n++;
+                outputElement.scrollTop = outputElement.scrollHeight;
+            }, 1500);
+        }
+        
+        function stopProgram() {
+            clearInterval(intervalId);
+            isRunning = false;
+            document.getElementById('runBtn').disabled = false;
+        }
+        
+        function resetProgram() {
+            stopProgram();
+            n = 1;
+            outputElement.innerHTML = "<p>你说 古格安 你要当他的古格安</p>";
+        }
+        
+        document.getElementById('runBtn').addEventListener('click', runProgram);
+        document.getElementById('stopBtn').addEventListener('click', stopProgram);
+        document.getElementById('resetBtn').addEventListener('click', resetProgram);
+    </script>
+</body>
+</html>
