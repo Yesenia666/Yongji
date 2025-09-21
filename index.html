@@ -28,12 +28,7 @@
             padding: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
-        h1 {
-            text-align: center;
-            color: #5c6bc0;
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
+        
         .output-container {
             background: #f8f9fa;
             border: 2px solid #5c6bc0;
@@ -77,31 +72,6 @@
         .btn:active {
             transform: scale(0.95);
         }
-        .settings {
-            background: #e8eaf6;
-            border-radius: 15px;
-            padding: 15px;
-            margin-top: 15px;
-        }
-        .settings h3 {
-            color: #5c6bc0;
-            margin-bottom: 10px;
-            text-align: center;
-            font-size: 18px;
-        }
-        .speed-control {
-            margin-top: 15px;
-            text-align: center;
-        }
-        .speed-control label {
-            display: block;
-            margin-bottom: 5px;
-            color: #5c6bc0;
-            font-weight: bold;
-        }
-        .speed-control input {
-            width: 100%;
-        }
         .blue-text {
             color: #1976d2;
         }
@@ -118,8 +88,6 @@
 </head>
 <body>
     <div class="container">
-        <h1> </h1>
-        
         <div class="output-container" id="output">
             <!-- 输出内容将显示在这里 -->
         </div>
@@ -128,15 +96,6 @@
             <button class="btn" id="runBtn">运行</button>
             <button class="btn" id="stopBtn">停止</button>
             <button class="btn" id="resetBtn">重置</button>
-        </div>
-        
-        <div class="settings">
-            
-            
-            <div class="speed-control">
-                <label for="speedRange">速度: <span id="speedValue">中速</span></label>
-                <input type="range" id="speedRange" min="500" max="3000" step="100" value="1500">
-            </div>
         </div>
         
         <div class="info">
@@ -149,7 +108,7 @@
         let n = 1;
         let isRunning = false;
         let intervalId = null;
-        let speed = 1500; // 默认速度（毫秒）
+        const speed = 500; // 设置为极快速度（500毫秒）
         const outputElement = document.getElementById('output');
         
         // 初始消息 - 使用定制颜色
@@ -235,33 +194,6 @@
         document.getElementById('runBtn').addEventListener('click', runProgram);
         document.getElementById('stopBtn').addEventListener('click', stopProgram);
         document.getElementById('resetBtn').addEventListener('click', resetProgram);
-        
-        // 速度控制功能
-        const speedRange = document.getElementById('speedRange');
-        const speedValue = document.getElementById('speedValue');
-        
-        speedRange.addEventListener('input', () => {
-            speed = 3500 - speedRange.value; // 反转值：滑块值越小，速度越快
-            
-            // 更新速度显示
-            if (speed < 1000) {
-                speedValue.textContent = '极快';
-            } else if (speed < 1500) {
-                speedValue.textContent = '快速';
-            } else if (speed < 2000) {
-                speedValue.textContent = '中速';
-            } else if (speed < 2500) {
-                speedValue.textContent = '慢速';
-            } else {
-                speedValue.textContent = '极慢';
-            }
-            
-            // 如果正在运行，重新设置间隔
-            if (isRunning) {
-                stopProgram();
-                runProgram();
-            }
-        });
     </script>
 </body>
 </html>
