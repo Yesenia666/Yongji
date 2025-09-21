@@ -12,26 +12,34 @@
         }
         body {
             font-family: 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #6e8efb, #a777e3);
-            color: #333;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #fff;
             min-height: 100vh;
             padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
         }
         .container {
             width: 100%;
             max-width: 500px;
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(0, 0, 0, 0.7);
             border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid #4cc9f0;
         }
-        
+        .title {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #4cc9f0;
+            font-size: 28px;
+            text-shadow: 0 0 10px rgba(76, 201, 240, 0.7);
+        }
         .output-container {
-            background: #f8f9fa;
-            border: 2px solid #5c6bc0;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #4cc9f0;
             border-radius: 15px;
             height: 50vh;
             padding: 15px;
@@ -39,16 +47,17 @@
             margin-bottom: 20px;
             font-size: 18px;
             line-height: 1.6;
+            box-shadow: inset 0 0 10px rgba(76, 201, 240, 0.3);
         }
         .control-panel {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 10px;
+            gap: 15px;
             margin-bottom: 20px;
         }
         .btn {
-            padding: 12px 20px;
+            padding: 12px 25px;
             border: none;
             border-radius: 50px;
             cursor: pointer;
@@ -56,38 +65,53 @@
             font-weight: bold;
             transition: all 0.3s;
             min-width: 100px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
         #runBtn {
-            background: #4CAF50;
+            background: linear-gradient(to right, #4cc9f0, #4361ee);
             color: white;
         }
         #stopBtn {
-            background: #f44336;
+            background: linear-gradient(to right, #f72585, #b5179e);
             color: white;
         }
         #resetBtn {
-            background: #ff9800;
+            background: linear-gradient(to right, #f9c74f, #f9844a);
             color: white;
         }
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
         .btn:active {
-            transform: scale(0.95);
+            transform: translateY(1px);
         }
         .blue-text {
-            color: #1976d2;
+            color: #4cc9f0;
+            text-shadow: 0 0 5px rgba(76, 201, 240, 0.5);
         }
         .yellow-text {
-            color: #ffa000;
+            color: #f9c74f;
+            text-shadow: 0 0 5px rgba(249, 199, 79, 0.5);
         }
         .info {
             text-align: center;
+            margin-top: 20px;
+            font-size: 16px;
+            color: #a5b3c7;
+        }
+        .speed-indicator {
+            text-align: center;
             margin-top: 15px;
             font-size: 14px;
-            color: #666;
+            color: #4cc9f0;
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <h1 class="title"> </h1>
+        
         <div class="output-container" id="output">
             <!-- 输出内容将显示在这里 -->
         </div>
@@ -96,6 +120,10 @@
             <button class="btn" id="runBtn">运行</button>
             <button class="btn" id="stopBtn">停止</button>
             <button class="btn" id="resetBtn">重置</button>
+        </div>
+        
+        <div class="speed-indicator" id="speedIndicator">
+            //当前速度: 极快
         </div>
         
         <div class="info">
@@ -108,8 +136,9 @@
         let n = 1;
         let isRunning = false;
         let intervalId = null;
-        const speed = 500; // 设置为极快速度（500毫秒）
+        let speed = 500; // 初始速度（毫秒）
         const outputElement = document.getElementById('output');
+        const speedIndicator = document.getElementById('speedIndicator');
         
         // 初始消息 - 使用定制颜色
         const initialText = '你说 古格安 你要当他的古格安';
@@ -140,6 +169,18 @@
             }
             
             return formatted;
+        }
+        
+        // 更新速度指示器
+        function updateSpeedIndicator() {
+            let speedText;
+            if (speed < 100) speedText = "超高速";
+            else if (speed < 200) speedText = "极高速";
+            else if (speed < 300) speedText = "高速";
+            else if (speed < 400) speedText = "中速";
+            else speedText = "慢速";
+            
+            speedIndicator.textContent = `当前速度: ${speedText}`;
         }
         
         // 运行函数
@@ -176,24 +217,64 @@
             }, speed);
         }
         
-        // 停止函数
-        function stopProgram() {
+        // 停止/加速函数
+        function stopOrAccelerateProgram() {
+            if (!isRunning) return;
+            
+            // 减少间隔时间（加速）
+            speed = Math.max(50, speed - 50); // 每次减少50ms，最小50ms
+            
+            // 清除当前定时器
             clearInterval(intervalId);
-            isRunning = false;
-            document.getElementById('runBtn').disabled = false;
+            
+            // 以新速度重新开始
+            intervalId = setInterval(() => {
+                let m = n;
+                
+                // 输出"你要当他的眼睛" - 全部蓝色
+                outputElement.innerHTML += `<p class="blue-text">你要当他的眼睛</p>`;
+                
+                // 输出多个"那我呢"
+                let line = '';
+                for (let i = 0; i < m; i++) {
+                    line += formatNaWoNe();
+                }
+                line += '<span class="blue-text">？</span>';
+                outputElement.innerHTML += `<p>${line}</p>`;
+                
+                n++;
+                
+                // 自动滚动到底部
+                outputElement.scrollTop = outputElement.scrollHeight;
+                
+                // 限制输出行数，防止内存占用过多
+                if (outputElement.children.length > 50) {
+                    outputElement.removeChild(outputElement.firstChild);
+                    outputElement.removeChild(outputElement.firstChild);
+                }
+            }, speed);
+            
+            updateSpeedIndicator();
         }
         
         // 重置函数
         function resetProgram() {
-            stopProgram();
+            clearInterval(intervalId);
+            isRunning = false;
             n = 1;
+            speed = 500; // 重置速度
+            document.getElementById('runBtn').disabled = false;
             outputElement.innerHTML = `<p>${formattedInitialText}</p>`;
+            updateSpeedIndicator();
         }
         
         // 添加事件监听器
         document.getElementById('runBtn').addEventListener('click', runProgram);
-        document.getElementById('stopBtn').addEventListener('click', stopProgram);
+        document.getElementById('stopBtn').addEventListener('click', stopOrAccelerateProgram);
         document.getElementById('resetBtn').addEventListener('click', resetProgram);
+        
+        // 初始化速度指示器
+        updateSpeedIndicator();
     </script>
 </body>
 </html>
